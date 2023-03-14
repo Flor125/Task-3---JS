@@ -6,7 +6,7 @@ const categoriesInputs = document.querySelectorAll(".categories"); //filtra cate
 const searchInput = document.getElementById("search-input"); // filtro de search bar.
 const searchMessage = document.getElementById("search-message"); //muestra mensaje que no encontró el evento deseado.
 const searchResults = document.getElementById("card-template"); //template de las cartas.
-let pastEvents = [];
+let UpcomingEvents = [];
 
 //genera el modelo de carta para que no sea tan repetitivo escribir varias veces el mismo código.
 function generateCardHTML(event) {
@@ -39,7 +39,7 @@ function paintDOM(events) {
   let html = "";
   events.forEach((event) => {
     html += generateCardHTML(event);
-    pastEvents.push(event);
+    UpcomingEvents.push(event);
   });
   document.getElementById("card-template").innerHTML = html;
 }
