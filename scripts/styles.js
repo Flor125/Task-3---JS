@@ -83,7 +83,6 @@ searchInput.addEventListener('input', () => {
       </div>
     `;
     searchResults.innerHTML = '';
-    alert('Sorry, i cant found events for your search. Please try to write again!');
   } else {
     searchMessage.innerHTML = '';
     filteredStore.forEach(event => body += createCard(event));

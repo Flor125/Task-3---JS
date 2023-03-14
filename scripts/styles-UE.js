@@ -75,7 +75,6 @@ function searchEvents() {
       </div>
     `;
     searchResults.innerHTML = "";
-    alert("Sorry, I couldn't find events for your search. Please try again!");
   } else {
     searchMessage.innerHTML = "";
     paintDOM(filteredEvents.filter((event) => usersArray[0].currentDate < event.date));
