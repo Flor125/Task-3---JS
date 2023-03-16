@@ -1,27 +1,57 @@
 console.log("styles.js loaded")
-//datos 
 
-import usersArray from './usersData.js';
+//datos API.
+const usersArray = "https://mindhub-xj03.onrender.com/api/amazing";
+let events = []; //se crea una array vacío
 
-console.log(usersArray);
+const fetchData = () => { //Petición a URL de UserArray
+  fetch(usersArray)
+    .then(response => response.json())
+    .then(data => {
+      events = data.events;
+      console.log(events);
+      showCheckboxes();
+      filterAndPaintCards();
+      input.forEach(function(item) {
+        item.addEventListener("change", function() {
+          filterAndPaintCards();
+        });
+      });
+    })
+};
+fetchData(); //invoca a la función para que el fetch cargue los datos en la página
 
+//ID's
+const input = document.querySelectorAll(".categories");  //filtra categorias del checkbox.
+const tagToUpdate = document.getElementById("card-template"); //template de cartas
+const checkBox = document.getElementById("checkbox-js"); //checkboxes
+const searchInput = document.getElementById('search-input'); // filtro de search bar.
+const searchMessage = document.getElementById('search-message');//muestra mensaje que no encontró el evento deseado.
+const searchResults = document.getElementById('card-template');//template de las cartas en los resultados de búsqueda
 
-/*
-Muestra todo el array de datos
-for (let i = 0; i < usersArray[0].events.length; i++){
-  console.log(usersArray[0].events[i])
-}*/
+function createCheckBox(check, index) { //crea checkboxes dinámicos
+  return `
+    <div class="form-check form-check-inline">
+      <input class="categories" type="checkbox" id="inlineCheckbox${index}" value="${check.category}">
+      <label class="food-fair" for="inlineCheckbox${index}">${check.category}</label>
+    </div>
+  `;
+}
 
+function showCheckboxes() { //filtra y crea dinámicamente los checkboxes
+  const uniqueCategories = {};
+  let index = 1;
+  events.forEach(event => {
+    if (!uniqueCategories[event.category]) {
+      uniqueCategories[event.category] = true;
+      checkBox.innerHTML += createCheckBox(event, index);
+      index++;
+    }
+  });
+  checkBox.addEventListener('change', filterAndPaintCards);
+}
 
-// -.-.-.-.-.-.--.-.-.-.-.-.--.-.-.-.-.-.- Start - Show cards with checkbox filter -.-.-.-.-.-.--.-.-.-.-.-.--.-.-.-.-.-.- 
-
-const input = document.querySelectorAll(".categories"); //filtra las categorias
-const tagToUpdate = document.getElementById("card-template"); 
-const searchInput = document.getElementById('search-input');
-const searchMessage = document.getElementById('search-message');
-const searchResults = document.getElementById('card-template');
-
-function createCard(event) {
+function createCard(event) {  //genera la card
   return `
     <div class="card m-2" style="width: 19rem" >
       <img src="${event.image}" alt="${event.category}" class="card-img-top" height="155" />
@@ -40,38 +70,32 @@ function createCard(event) {
   `;
 }
 
-function paintCards(events) {
+function paintCards(filteredStore) { //muestra la card en la página
   let body = '';
-  events.forEach(event => body += createCard(event));
+  filteredStore.forEach(event => body += createCard(event));
   tagToUpdate.innerHTML = body;
 }
 
-function filterAndPaintCards() {
+function filterAndPaintCards() { //filtra los eventos de las cards.
+  console.log("Filtering and painting cards");
   const checkedValue = [...document.querySelectorAll('.categories')]
     .filter(input => input.checked)
     .map(input => input.value);
-  let filteredStore = usersArray[0].events; 
+  let filteredStore = events; 
   if (checkedValue.length > 0) {
-    filteredStore = filteredStore.filter(({ category }) => checkedValue.includes(category));
+    filteredStore = events.filter(event => checkedValue.includes(event.category));
   }
   paintCards(filteredStore);
 }
-
-paintCards(usersArray[0].events);
-input.forEach(function(item) {
-  item.addEventListener("change", filterAndPaintCards);
-});
-
+//filtro del buscador.
 searchInput.addEventListener('input', () => {
   const searchText = searchInput.value.toLowerCase();
-
-  const filteredStore = usersArray[0].events.filter(event => {
+  const filteredStore = events.filter(event => {
     const nameMatch = event.name.toLowerCase().includes(searchText);
     const categoryMatch = event.category.toLowerCase().includes(searchText);
     const dateMatch = event.date.toLowerCase().includes(searchText);
     return nameMatch || categoryMatch || dateMatch;
   });
-
   let body = '';
   if (filteredStore.length === 0) {
     searchMessage.innerHTML = `
@@ -83,13 +107,10 @@ searchInput.addEventListener('input', () => {
       </div>
     `;
     searchResults.innerHTML = '';
-  } else {
+    }else{
     searchMessage.innerHTML = '';
     filteredStore.forEach(event => body += createCard(event));
     searchResults.innerHTML = body;
   }
 });
-
-
-// -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.- End - input search filter with alert -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
 
