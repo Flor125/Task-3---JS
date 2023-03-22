@@ -22,7 +22,8 @@ const fetchData = () => {
         <div class="col-md-7 order-md-2 my-5">
           <h2 class="featurette-heading fw-normal ">${profile.name}</h2>
           <p class="lead">${profile.description}</p>
-          <p class="lead">Capacity: ${profile.assistance}</p>  
+          <p class="lead">Capacity: ${profile.assistance || profile.estimate}</p>  
+          
           <p class="lead">Place: ${profile.place} </p>
         </div>
         <div class="col-md-5 order-md-1">
